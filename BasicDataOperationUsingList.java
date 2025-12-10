@@ -20,7 +20,7 @@ import java.util.List;
 public class BasicDataOperationUsingList {
     private byte byteValueToSearch;
     private Byte[] byteArray;
-    private List<Byte> dateTimeList;
+    private List<Byte> byteList;
 
     /**
      * Конструктор, який iнiцiалiзує об'єкт з готовими даними.
@@ -31,7 +31,7 @@ public class BasicDataOperationUsingList {
     BasicDataOperationUsingList(byte byteValueToSearch, Byte[] byteArray) {
         this.byteValueToSearch = byteValueToSearch;
         this.byteArray = byteArray;
-        this.dateTimeList = new ArrayList<>(Arrays.asList(byteArray));
+        this.byteList = new ArrayList<>(Arrays.asList(byteArray));
     }
     
     /**
@@ -70,7 +70,9 @@ public class BasicDataOperationUsingList {
     void performArraySorting() {
         long timeStart = System.nanoTime();
 
-        Arrays.sort(byteArray);
+        byteArray = Arrays.stream(byteArray)
+                              .sorted()
+                              .toArray(Byte[]::new);
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву чисел");
     }
@@ -81,7 +83,11 @@ public class BasicDataOperationUsingList {
     void findInArray() {
         long timeStart = System.nanoTime();
 
-        int position = Arrays.binarySearch(this.byteArray, byteValueToSearch);
+        int position = Arrays.stream(byteArray)
+                .map(Arrays.asList(byteArray)::indexOf)
+                .filter(i -> byteValueToSearch == byteArray[i])
+                .findFirst()
+                .orElse(-1);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi чисел");
 
@@ -103,22 +109,19 @@ public class BasicDataOperationUsingList {
 
         long timeStart = System.nanoTime();
 
-        byte minValue = byteArray[0];
-        byte maxValue = byteArray[0];
+        Byte min = Arrays.stream(byteArray)
+                                  .min(Byte::compareTo)
+                                  .orElse(null);
 
-        for (byte currentDateTime : byteArray) {
-            if (byteValueToSearch < minValue) {
-                minValue = currentDateTime;
-            }
-            if (byteValueToSearch > maxValue) {
-                maxValue = currentDateTime;
-            }
-        }
+
+        Byte max = Arrays.stream(byteArray)
+                                  .max(Byte::compareTo)
+                                  .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального числа в масивi");
 
-        System.out.println("Найменше значення в масивi: " + minValue);
-        System.out.println("Найбільше значення в масивi: " + maxValue);
+        System.out.println("Найменше значення в масивi: " + min);
+        System.out.println("Найбільше значення в масивi: " + max);
     }
 
     /**
@@ -127,7 +130,11 @@ public class BasicDataOperationUsingList {
     void findInList() {
         long timeStart = System.nanoTime();
 
-        int position = Collections.binarySearch(this.dateTimeList, byteValueToSearch);
+        int position = byteList.stream()
+            .map(byteList::indexOf)
+            .filter(i -> byteValueToSearch == byteList.get(i))
+            .findFirst()
+            .orElse(-1);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в List чисел");        
 
@@ -142,15 +149,15 @@ public class BasicDataOperationUsingList {
      * Визначає найменше і найбільше значення в колекції ArrayList з числами.
      */
     void locateMinMaxInList() {
-        if (dateTimeList == null || dateTimeList.isEmpty()) {
+        if (byteList == null || byteList.isEmpty()) {
             System.out.println("Колекція ArrayList є пустою або не ініціалізованою.");
             return;
         }
 
         long timeStart = System.nanoTime();
 
-        byte minValue = Collections.min(dateTimeList);
-        byte maxValue = Collections.max(dateTimeList);
+        byte minValue = Collections.min(byteList);
+        byte maxValue = Collections.max(byteList);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального числа в List");
 
@@ -165,7 +172,9 @@ public class BasicDataOperationUsingList {
     void sortList() {
         long timeStart = System.nanoTime();
 
-        Collections.sort(dateTimeList);
+        byteList = byteList.stream()
+                       .sorted()
+                       .collect(java.util.stream.Collectors.toList());
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування ArrayList числа");
     }

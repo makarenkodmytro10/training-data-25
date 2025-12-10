@@ -21,7 +21,7 @@ import java.util.PriorityQueue;
 public class BasicDataOperationUsingQueue {
     private byte byteValueToSearch;
     private Byte[] byteArray;
-    private Queue<Byte> dateTimeQueue;
+    private Queue<Byte> byteQueue;
 
     /**
      * Конструктор, який iнiцiалiзує об'єкт з готовими даними.
@@ -32,7 +32,7 @@ public class BasicDataOperationUsingQueue {
     BasicDataOperationUsingQueue(byte byteValueToSearch, Byte[] byteArray) {
         this.byteValueToSearch = byteValueToSearch;
         this.byteArray = byteArray;
-        this.dateTimeQueue = new PriorityQueue<>(Arrays.asList(byteArray));
+        this.byteQueue = new PriorityQueue<>(Arrays.asList(byteArray));
     }
     
     /**
@@ -127,7 +127,8 @@ public class BasicDataOperationUsingQueue {
         // вимірюємо час пошуку в черзі
         long timeStart = System.nanoTime();
 
-        boolean elementExists = this.dateTimeQueue.contains(byteValueToSearch);
+        boolean elementExists = byteQueue.stream()
+            .anyMatch(dateTime -> dateTime.equals(byteValueToSearch));
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в Queue чисел");
 
@@ -142,7 +143,7 @@ public class BasicDataOperationUsingQueue {
      * Визначає найменше та найбільше значення в черзі byte.
      */
     private void locateMinMaxInQueue() {
-        if (dateTimeQueue == null || dateTimeQueue.isEmpty()) {
+        if (byteQueue == null || byteQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
@@ -150,8 +151,13 @@ public class BasicDataOperationUsingQueue {
         // відстежуємо час пошуку граничних значень
         long timeStart = System.nanoTime();
 
-        byte minValue = Collections.min(dateTimeQueue);
-        byte maxValue = Collections.max(dateTimeQueue);
+        Byte minValue = byteQueue.stream()
+                .min(Byte::compareTo)
+                .orElse(null);
+       
+        Byte maxValue = byteQueue.stream()
+                .max(Byte::compareTo)
+                .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального числа в Queue");
 
@@ -163,18 +169,18 @@ public class BasicDataOperationUsingQueue {
      * Виконує операції peek і poll з чергою byte.
      */
     private void performQueueOperations() {
-        if (dateTimeQueue == null || dateTimeQueue.isEmpty()) {
+        if (byteQueue == null || byteQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
 
-        byte headElement = dateTimeQueue.peek();
+        byte headElement = byteQueue.peek();
         System.out.println("Головний елемент черги (peek): " + headElement);
 
-        headElement = dateTimeQueue.poll();
+        headElement = byteQueue.poll();
         System.out.println("Видалений елемент черги (poll): " + headElement);
 
-        headElement = dateTimeQueue.peek();
+        headElement = byteQueue.peek();
         System.out.println("Новий головний елемент черги: " + headElement);
     }
 }
